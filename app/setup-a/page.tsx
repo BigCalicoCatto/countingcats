@@ -8,7 +8,7 @@ import StatsPanel from '@/components/StatsPanel'
 import TradeCard from '@/components/TradeCard'
 import { Trade, TradeStats } from '@/types'
 
-export default function HomePage() {
+export default function SetupAPage() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [stats, setStats] = useState<TradeStats | null>(null)
   const [loading, setLoading] = useState(true)
@@ -19,6 +19,7 @@ export default function HomePage() {
     const { data } = await supabase
       .from('forward_trades')
       .select('*')
+      .eq('setup', 'A')
       .order('created_at', { ascending: false })
     if (data) {
       setTrades(data as Trade[])
@@ -41,7 +42,7 @@ export default function HomePage() {
     <div className="font-mono">
       <div className="mb-8">
         <div className="text-xs text-pink-600 uppercase tracking-widest mb-1">FatCat Forward Test</div>
-        <h1 className="text-2xl font-bold text-pink-400 tracking-widest">OVERVIEW</h1>
+        <h1 className="text-2xl font-bold text-pink-400 tracking-widest">SETUP A</h1>
         {pending.length > 0 && (
           <div className="mt-3 px-3 py-2 border border-yellow-800 rounded bg-yellow-950 text-yellow-400 text-xs font-bold tracking-widest">
             ⏳ {pending.length} PENDING TRADE{pending.length > 1 ? 'S' : ''} — UPDATE OUTCOMES BELOW
@@ -55,14 +56,14 @@ export default function HomePage() {
 
       {!loading && stats && (
         <div className="mb-10">
-          <div className="text-xs text-pink-600 uppercase tracking-widest mb-4">Performance Stats</div>
+          <div className="text-xs text-pink-600 uppercase tracking-widest mb-4">Setup A Performance</div>
           <StatsPanel stats={stats} />
         </div>
       )}
 
       {!loading && trades.length > 0 && (
         <div className="mb-4 flex items-center justify-between flex-wrap gap-3">
-          <div className="text-xs text-pink-600 uppercase tracking-widest">Trade Log</div>
+          <div className="text-xs text-pink-600 uppercase tracking-widest">Setup A Trades</div>
           <div className="flex gap-2 flex-wrap">
             {(['all', 'pending', 'closed'] as const).map(f => (
               <button key={f}
@@ -73,7 +74,7 @@ export default function HomePage() {
               </button>
             ))}
             <button
-              onClick={() => exportToCSV(trades)}
+              onClick={() => exportToCSV(trades, 'setup-a-trades.csv')}
               className="px-3 py-1 rounded border border-green-800 text-green-500 hover:bg-green-900 hover:text-green-300 text-xs font-bold tracking-widest uppercase transition-all"
             >
               ↓ CSV
@@ -85,7 +86,7 @@ export default function HomePage() {
       {!loading && filtered.length === 0 && (
         <div className="text-center py-16 border border-pink-900 rounded-lg">
           <div className="text-pink-700 text-4xl mb-4">⬡</div>
-          <div className="text-pink-600 text-sm tracking-widest uppercase">No trades yet</div>
+          <div className="text-pink-600 text-sm tracking-widest uppercase">No Setup A trades yet</div>
           <div className="text-pink-800 text-xs mt-2">Go to Log Trade to add your first trade</div>
         </div>
       )}
