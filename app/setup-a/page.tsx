@@ -1,12 +1,14 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { calculateStats } from '@/lib/calculations'
 import { exportToCSV } from '@/utils/export'
-import StatsPanel from '@/components/StatsPanel'
-import TradeCard from '@/components/TradeCard'
 import { Trade, TradeStats } from '@/types'
+
+const StatsPanel = dynamic(() => import('@/components/StatsPanel'), { ssr: false })
+const TradeCard = dynamic(() => import('@/components/TradeCard'), { ssr: false })
 
 export default function SetupAPage() {
   const [trades, setTrades] = useState<Trade[]>([])
