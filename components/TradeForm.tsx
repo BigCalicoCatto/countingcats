@@ -12,6 +12,7 @@ const defaultCalc: CalculatedFields = {
 }
 
 export default function TradeForm({ onSubmitSuccess }: { onSubmitSuccess?: () => void }) {
+  const [mounted, setMounted] = useState(false)
   const [pair, setPair] = useState<Pair>('BTC/USDT')
   const [setup] = useState<Setup>('A')
   const [htfBias, setHtfBias] = useState<HTFBias>('bullish')
@@ -28,17 +29,20 @@ export default function TradeForm({ onSubmitSuccess }: { onSubmitSuccess?: () =>
   const [ruleBrokenNotes, setRuleBrokenNotes] = useState('')
   const [notes, setNotes] = useState('')
   const [calc, setCalc] = useState<CalculatedFields>(defaultCalc)
-  const [utcNow, setUtcNow] = useState(new Date())
+  const [utcNow, setUtcNow] = useState<Date | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
+    setMounted(true)
+    setUtcNow(new Date())
     const interval = setInterval(() => setUtcNow(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
+    if (!utcNow) return
     const e = parseFloat(entryPrice)
     const s = parseFloat(stopLoss)
     const t = parseFloat(takeProfit)
@@ -48,12 +52,13 @@ export default function TradeForm({ onSubmitSuccess }: { onSubmitSuccess?: () =>
     }
   }, [entryPrice, stopLoss, takeProfit, riskUsd, overnightFee, utcNow])
 
-  const utcDateStr = utcNow.toISOString().split('T')[0]
-  const utcTimeStr = utcNow.toISOString().split('T')[1].substring(0, 8)
+  const utcDateStr = utcNow ? utcNow.toISOString().split('T')[0] : '...'
+  const utcTimeStr = utcNow ? utcNow.toISOString().split('T')[1].substring(0, 8) : '...'
 
   async function handleSubmit() {
     setErrorMsg('')
     setSuccessMsg('')
+    if (!utcNow) return
     const e = parseFloat(entryPrice)
     const s = parseFloat(stopLoss)
     const tp = parseFloat(takeProfit)
@@ -86,6 +91,8 @@ export default function TradeForm({ onSubmitSuccess }: { onSubmitSuccess?: () =>
     setCalc(defaultCalc)
     onSubmitSuccess?.()
   }
+
+  if (!mounted) return null
 
   const labelClass = "block text-xs font-bold tracking-widest text-pink-400 mb-1 uppercase"
   const inputClass = "w-full bg-black border border-pink-900 text-green-300 font-mono text-sm px-3 py-2 rounded focus:outline-none focus:border-pink-500 placeholder-gray-700"
