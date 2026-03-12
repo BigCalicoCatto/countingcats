@@ -1,7 +1,9 @@
 'use client'
 
-import TradeForm from '@/components/TradeForm'
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
+
+const TradeForm = dynamic(() => import('@/components/TradeForm'), { ssr: false })
 
 export default function LogPage() {
   const router = useRouter()
